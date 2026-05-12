@@ -1,4 +1,42 @@
 import pygame
+import sys
+pygame.init()
 
+#making the screen
 HIEGHT = 700
-WIDTH = 600
+WIDTH = 800
+
+#setting up player character 
+guy1 = pygame.sprite.Sprite()
+guy2 = pygame.sprite.Sprite()
+
+guy1.image =pygame.image.load('')
+guy1.rect
+
+
+
+
+while True:
+    pygame.display.set_mode((WIDTH, HIEGHT))
+
+
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+            print("skibidi for now")
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_a:
+            print("skibidi for now")
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+            print("skibidi for now")
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+            print("skibidi for now")
+
+
+
+        if event.type == pygame.QUIT:
+            pygame.quit
+            sys.exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            pygame.quit
+            sys.exit()
+
+            
