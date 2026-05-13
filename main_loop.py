@@ -10,8 +10,10 @@ WIDTH = 800
 guy1 = pygame.sprite.Sprite()
 guy2 = pygame.sprite.Sprite()
 
-guy1.image =pygame.image.load('')
-guy1.rect
+guy1.image = pygame.image.load('')
+guy1.rect = guy1.image.get_rect()
+guy2.image = pygame.image.load('')
+guy2.rect = guy2.image.get_rect()
 
 
 
