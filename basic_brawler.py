@@ -1,6 +1,7 @@
 class player_character:
-    def __init__(self, char_name, app):
+    def __init__(self, char_name, image_path, x, y, groups, ):
         """ Parent constructor - called before child constructors"""
+        super().__init__(groups), [2,5]
         self.attack_mod = 1.0
         self.defense_mod = 1.0
         self.name = char_name
@@ -8,7 +9,6 @@ class player_character:
         self.max_shield = 50
         self.y = 0
         self.x = 0
-        self.app = app
 
 
 class Brawler(player_character):

@@ -1,5 +1,5 @@
-import pygame
-import sys
+import pygame,sys
+
 pygame.init()
 
 #making the screen
@@ -20,14 +20,30 @@ guy2 = pygame.sprite.Sprite()
 guy2.image = guy2_scaled
 guy2.rect = guy2.image.get_rect(topright = (400,100))
 
+player_grav = 0
+
 guy1_group = pygame.sprite.GroupSingle(guy1)
 guy2_group = pygame.sprite.GroupSingle(guy2)
 
 
 while True:
- 
+        
+    player_grav += 0.01        
+    guy1.rect.y += player_grav        
+    guy2.rect.y += player_grav
     for event in pygame.event.get():
+
         keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE]:
+            if guy1.rect.bottom >= HIEGHT:
+                player_grav = -5
+        if guy1.rect.bottom >= HIEGHT:
+            guy1.rect.bottom = HIEGHT
+            player_grav = 0
+        
+
+        
         #guy1 controls
         if keys[pygame.K_w]:
             guy1.rect.y -= 10
@@ -54,6 +70,12 @@ while True:
             print('tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung sahur')
             pygame.quit()
             sys.exit()
+    
+
+
+
+
+
     screen.fill((30, 30, 30))
     guy1_group.draw(screen)
     guy2_group.draw(screen)
