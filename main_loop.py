@@ -1,4 +1,4 @@
-import pygame,sys
+import pygame,sys,basic_brawler
 
 pygame.init()
 
@@ -26,43 +26,43 @@ guy1_group = pygame.sprite.GroupSingle(guy1)
 guy2_group = pygame.sprite.GroupSingle(guy2)
 
 
-while True:
-        
-    player_grav += 0.01        
+while True:   
+
+    keys = pygame.key.get_pressed()
+
+    player_grav += 0.05        
     guy1.rect.y += player_grav        
-    guy2.rect.y += player_grav
+    guy2.rect.y += player_grav 
+    
+
+    #guy1 controls
+    if keys[pygame.K_w]:
+        guy1.rect.y -= 1
+    if keys[pygame.K_a]:
+        guy1.rect.x -= 1
+    if keys[pygame.K_s]:
+         guy1.rect.y += 1
+    if keys[pygame.K_d]:
+        guy1.rect.x += 1
+
+            #guy 2 controls
+    if keys[pygame.K_UP]:
+         guy2.rect.y -= 1
+    if keys[pygame.K_LEFT]:
+        guy2.rect.x -= 1
+    if keys[pygame.K_DOWN]:
+         guy2.rect.y += 1
+    if keys[pygame.K_RIGHT]:
+        guy2.rect.x += 1
+
+
     for event in pygame.event.get():
 
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_SPACE]:
-            if guy1.rect.bottom >= HIEGHT:
-                player_grav = -5
-        if guy1.rect.bottom >= HIEGHT:
-            guy1.rect.bottom = HIEGHT
+        if guy1.rect.bottom <= HIEGHT:
             player_grav = 0
-        
-
-        
-        #guy1 controls
-        if keys[pygame.K_w]:
-            guy1.rect.y -= 10
-        if keys[pygame.K_a]:
-            guy1.rect.x -= 10
-        if keys[pygame.K_s]:
-            guy1.rect.y += 10
-        if keys[pygame.K_d]:
-            guy1.rect.x += 10
-            #guy 2 controls
-        if keys[pygame.K_UP]:
-            guy2.rect.y -= 10
-        if keys[pygame.K_LEFT]:
-            guy2.rect.x -= 10
-        if keys[pygame.K_DOWN]:
-            guy2.rect.y += 10
-        if keys[pygame.K_RIGHT]:
-            guy2.rect.x += 10
-
+            if keys[pygame.K_SPACE]:
+                player_grav = -6
+  
         if event.type == pygame.QUIT:
             pygame.quit
             sys.exit()

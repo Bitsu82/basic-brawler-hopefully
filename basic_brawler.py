@@ -1,39 +1,60 @@
-class player_character:
-    def __init__(self, char_name, image_path, x, y, groups, ):
-        """ Parent constructor - called before child constructors"""
-        super().__init__(groups), [2,5]
-        self.attack_mod = 1.0
-        self.defense_mod = 1.0
-        self.name = char_name
-        self.shield = 0
-        self.max_shield = 50
-        self.y = 0
-        self.x = 0
+import pygame,sys,time
+from enum import Enum
+
+# All possible states a character can be in
+
+class State(Enum):
+    IDLE = "idle"
+    SHIELDING = "shielding"
+    SHIELD_BROKEN = "shield_broken"
+    ATTACKING = "attacking"
+    HURT = "hurt"
+
+class PlayerCharacter(pygame.sprite.Sprite):
+    def __init__(self, char_name, image_path, x, y, groups):
+        super().__init__(groups)
+
+        self.char_name = char_name
+
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect(topleft=(x, y))#image loading and starting position
+        self.max_health = 100
+        self.health = self.max_health#boring health stuff
+        self.gravity = 0 
+        self.gravity_strength = 1 #boring gravity stuff
+        self.ground_level = 700 # where the floor is
+        self.attack_mod = 1.0# cuz this is the parent class it is one but it is an attack mult
+        self.state = State.IDLE # starting tate is doing nothing
+        self.state_start_time = 0 #we need a starting point for the later states to ovveride so we just bs one
+        self.shield_hits_remaining = 2 #max hits of the shield basically
+        self.SHIELD_DURATION = 4000      # 4 seconnds for how long the shield will live
+        self.SHIELD_BREAK_ENDLAG = 3000  # 3 seconds of endlag once the shield breaks
+
+    def grav(self):
+        self.gravity += 1
+        self.rect.y = self.gravity
+        if self.rect.bottom == 700:
+            self.rect.bottom = 700
+            self.gravity = 0
+
+    def damage_taken(self,incoming_damage):
+        damage = max(0, incoming_damage - self.shield)
+        self.health = max(0, self.health - damage)
+
+    def punch(self):
+        return self.attack_mod 
+    
+    def kick(self):
+        return self.attack_mod
+
+    def shield(self):
+        self.print('dd')
+
+    def hitsun(self):
+        self.Print('67')
 
 
-class Brawler(player_character):
 
-
-    def ___init___(self, char_name, app):
-        player_character.___init___(self, char_name, app)
-        self.max_health = 100;
-        self.attack = 1.5;
-        self.defense = 1;
-        self.magic = 1;
-        self.resistance = 10;
-        self.health = self.max_health;
-
-
-class Lil_baby(player_character):
-
-    def ___init___(self, char_name, app):
-        player_character.__init__(self, char_name, app)
-        self.max_health = 80;
-        self.attack = 0.3;
-        self.defense = 0.3;
-        self.magic = 5;
-        self.resistance = 1;
-        self.healtah = self.max_health;
 
 
 
