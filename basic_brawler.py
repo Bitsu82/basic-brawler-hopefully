@@ -33,6 +33,8 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.shield_hits_remaining = 4 #max hits of the shield basically
         self.SHIELD_DURATION = 4000      # 4 seconnds for how long the shield will live
         self.SHIELD_BREAK_ENDLAG = 3000  # 3 seconds of endlag once the shield breaks
+        self.shield_cooldown = 0
+        self.SHIELD_COOLDOWN = 2000
         self.combo_count = 0
         self.max_combo = 3
         self.last_hit_time = 0
@@ -40,6 +42,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.punch_hitbox = None
         self.shield_hitbox = None
         self.hitstun_duration = 0
+        self.knockback_x = 0
+        self.knockback_y = 0
+        self.KNOCKBACK_FRICTION = 0.8
+        self.dash_cooldown = 0
+        self.DASH_COOLDOWN = 2000
+        self.dash_speed = 70
         self.facing = "right"
 
 
@@ -47,6 +55,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.grav()
         self.state_check_timers()
         self.update_hitboxes()
+    
 
     def update_hitboxes(self):
         if self.shield_hitbox:
@@ -82,16 +91,26 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
 
     def change_state(self,new_state):
+        if self.state == State.SHIELDING:
+            self.shield_cooldown = pygame.time.get_ticks()
+            self.shield_hitbox = None
+        
         self.state = new_state
         self.state_start_time = pygame.time.get_ticks()
+
 
     def grav(self):
         if self.rect.bottom >= self.ground_level:
             self.rect.bottom = self.ground_level
             self.gravity = 0
+            self.knockback_x = self.knockback_x * self.KNOCKBACK_FRICTION
         else:
             self.gravity += 1 * self.gravity_strength
             self.rect.y += self.gravity
+        
+        self.rect.x += int(self.knockback_x)
+        self.rect.y += int(self.knockback_y)
+        self.knockback_y *= self.KNOCKBACK_FRICTION
 
         if self.rect.left <= 0:
             self.rect.left = 0
@@ -105,7 +124,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
             self.gravity -= 20
             self.rect.y -= 10
 
-    def damage_taken(self,incoming_damage,hitstun =0):
+    def damage_taken(self,incoming_damage,hitstun =0,knockback_dir = 0, knockback_str = 0):
         if self.state == State.SHIELDING:
             self.shield_hits_remaining -= 1
             print(f"{self.char_name} shield hits left: {self.shield_hits_remaining}")
@@ -123,13 +142,25 @@ class PlayerCharacter(pygame.sprite.Sprite):
         damage = max(0, incoming_damage)
         self.health = max(0, self.health - damage)
 
+        if knockback_str > 0:
+            self.apply_knockback(knockback_dir,knockback_str)
+
         if hitstun > 0:
             self.hitstun_duration = hitstun
             self.change_state(State.HURT)
 
     def use_shield(self):
+        now = pygame.time.get_ticks()
+
+        if self.state == State.SHIELDING:
+            self.change_state(State.IDLE)
+            return
+
         if self.state != State.IDLE:
             return 
+        if now - self.shield_cooldown < self.SHIELD_COOLDOWN:
+            return
+
         self.shield_hits_remaining = 3
         self.shield_hitbox = pygame.Rect(self.rect.left, self.rect.top, self.rect.width, self.rect.height)
         self.change_state(State.SHIELDING)
@@ -138,6 +169,26 @@ class PlayerCharacter(pygame.sprite.Sprite):
         if self.state != State.SHIELD_BROKEN:
             self.hitstun_duration = duration           
             self.change_state(State.HURT)
+
+    def apply_knockback(self,direction,strength):
+        self.knockback_x = direction * strength
+        self.knockback_y = -strength * 0.5
+
+    def dash(self):
+        if self.state != State.IDLE:
+            return
+        
+        now = pygame.time.get_ticks()
+        if now - self.dash_cooldown < self.DASH_COOLDOWN:
+            return
+        
+        self.dash_cooldown = now
+        self.change_state(State.ATTACKING) #locks you in place for a smidge after dash
+
+        if self.facing == "right":
+            self.knockback_x = self.dash_speed 
+        else:
+            self.knockback_x = -self.dash_speed
 
 
     def punch(self,target):
@@ -157,15 +208,22 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.last_hit_time = now
         self.change_state(State.ATTACKING)
 
+
+
         if self.facing == "right":
             self.punch_hitbox = self.punch_hitbox = pygame.Rect(self.rect.right, self.rect.centery - 20, 80, 40) 
         else:
             self.punch_hitbox = pygame.Rect(self.rect.left - 80, self.rect.centery - 20, 80, 40)
 
         if self.punch_hitbox and self.punch_hitbox.colliderect(target.rect):
-            target.damage_taken(self.attack_mod * 10, hitstun=300)
+            direction = 1 if self.facing == 'right' else -1
 
-    
+            if self.combo_count == self.max_combo:
+                target.damage_taken(self.attack_mod * 15, hitstun=300, knockback_dir = direction, knockback_str = 15)
+            else:
+                target.damage_taken(self.attack_mod * 10, hitstun=300)
 
+    def is_dead(self):
+        return self.health <= 0
 
 
