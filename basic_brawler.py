@@ -194,7 +194,7 @@ class PlayerCharacter(pygame.sprite.Sprite):
     def punch(self,target):
 
         if self.state != State.IDLE:
-            return None
+            return 
         
         now = pygame.time.get_ticks()
 
