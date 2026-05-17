@@ -38,11 +38,25 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.last_hit_time = 0
         self.combo_window = 750
         self.punch_hitbox = None
+        self.shield_hitbox = None
+        self.hitstun_duration = 0
+        self.facing = "right"
 
 
     def update(self):
         self.grav()
         self.state_check_timers()
+        self.update_hitboxes()
+
+    def update_hitboxes(self):
+        if self.shield_hitbox:
+            self.shield_hitbox.topleft = (self.rect.left, self.rect.top)
+
+        if self.punch_hitbox:
+            if self.facing == "right":
+                self.punch_hitbox.topleft = (self.rect.right, self.rect.centery - 20)
+            else:
+                self.punch_hitbox.topleft = (self.rect.left - 80, self.rect.centery - 20)
 
     def state_check_timers(self):
         elapsed = pygame.time.get_ticks() - self.state_start_time  
@@ -53,22 +67,25 @@ class PlayerCharacter(pygame.sprite.Sprite):
 
         elif self.state == State.SHIELD_BROKEN:
             if elapsed >= self.SHIELD_BREAK_ENDLAG:
+                self.shield_hitbox = None                
                 self.change_state(State.IDLE)
+
 
         elif self.state == State.HURT:
             if elapsed >= self.hitstun_duration:   # hitstun over you can act again
                 self.change_state(State.IDLE)
 
         elif self.state == State.ATTACKING:
-            if elapsed >= 200:                     # we have endlag now yay
+            if elapsed >= 300:                     # we have endlag now yay
+                self.punch_hitbox = None                
                 self.change_state(State.IDLE)
+
 
     def change_state(self,new_state):
         self.state = new_state
         self.state_start_time = pygame.time.get_ticks()
 
     def grav(self):
-        print(f"grav running - bottom:{self.rect.bottom} gravity:{self.gravity}")
         if self.rect.bottom >= self.ground_level:
             self.rect.bottom = self.ground_level
             self.gravity = 0
@@ -76,18 +93,26 @@ class PlayerCharacter(pygame.sprite.Sprite):
             self.gravity += 1 * self.gravity_strength
             self.rect.y += self.gravity
 
-    def jump(self):
-        print(f"jump called! bottom:{self.rect.bottom} ground:{self.ground_level}")
-        if self.rect.bottom >= self.ground_level:
-            print("jumping!")
-            self.gravity -= 15
-            self.rect.y -= 20
+        if self.rect.left <= 0:
+            self.rect.left = 0
 
-    def damage_taken(self,incoming_damage):
+        if self.rect.right >= 1200:
+            self.rect.right = 1200
+    
+
+    def jump(self):
+        if self.rect.bottom >= self.ground_level:
+            self.gravity -= 20
+            self.rect.y -= 10
+
+    def damage_taken(self,incoming_damage,hitstun =0):
         if self.state == State.SHIELDING:
             self.shield_hits_remaining -= 1
+            print(f"{self.char_name} shield hits left: {self.shield_hits_remaining}")
             if self.shield_hits_remaining <= 0:
+                self.shield_hitbox = None
                 self.change_state(State.SHIELD_BROKEN)
+                print(f"{self.char_name} shield broke!")
             return
 
         if self.state == State.SHIELD_BROKEN:
@@ -98,17 +123,22 @@ class PlayerCharacter(pygame.sprite.Sprite):
         damage = max(0, incoming_damage)
         self.health = max(0, self.health - damage)
 
+        if hitstun > 0:
+            self.hitstun_duration = hitstun
+            self.change_state(State.HURT)
+
     def use_shield(self):
         if self.state != State.IDLE:
             return 
         self.shield_hits_remaining = 3
+        self.shield_hitbox = pygame.Rect(self.rect.left, self.rect.top, self.rect.width, self.rect.height)
         self.change_state(State.SHIELDING)
 
-    def hitstun(self, duration=500):
+    def apply_hitstun(self, duration=500):
         if self.state != State.SHIELD_BROKEN:
+            self.hitstun_duration = duration           
             self.change_state(State.HURT)
-            self.hitstun_duration = duration
-            self.state_start_time = pygame.time.get_ticks()
+
 
     def punch(self,target):
 
@@ -127,8 +157,12 @@ class PlayerCharacter(pygame.sprite.Sprite):
         self.last_hit_time = now
         self.change_state(State.ATTACKING)
 
-        punch_hitbox = pygame.Rect(self.rect.right, self.rect.y + 20, 50, 40)     
-        if punch_hitbox.colliderect(target.rect):
+        if self.facing == "right":
+            self.punch_hitbox = self.punch_hitbox = pygame.Rect(self.rect.right, self.rect.centery - 20, 80, 40) 
+        else:
+            self.punch_hitbox = pygame.Rect(self.rect.left - 80, self.rect.centery - 20, 80, 40)
+
+        if self.punch_hitbox and self.punch_hitbox.colliderect(target.rect):
             target.damage_taken(self.attack_mod * 10, hitstun=300)
 
     
